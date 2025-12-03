@@ -1,4 +1,4 @@
-package htlkaindorf.springsecuritydemo.auth;
+package htlkaindorf.springsecuritydemo.model.dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package htlkaindorf.springsecuritydemo.entity;
+package htlkaindorf.springsecuritydemo.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VerificationToken {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,5 +23,4 @@ public class VerificationToken {
 
     @OneToOne
     private User user;
-
 }

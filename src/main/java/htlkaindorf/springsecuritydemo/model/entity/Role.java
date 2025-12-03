@@ -1,9 +1,7 @@
-package htlkaindorf.springsecuritydemo.entity;
+package htlkaindorf.springsecuritydemo.model.entity;
 
 public enum Role {
-
     USER,
     ADMIN,
     MANAGER,
-
 }

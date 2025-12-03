@@ -1,7 +1,7 @@
 package htlkaindorf.springsecuritydemo.services;
 
-import htlkaindorf.springsecuritydemo.auth.AuthRequest;
-import htlkaindorf.springsecuritydemo.auth.AuthResponse;
+import htlkaindorf.springsecuritydemo.model.dto.auth.AuthRequest;
+import htlkaindorf.springsecuritydemo.model.dto.auth.AuthResponse;
 
 public interface AuthService {
 

@@ -1,6 +1,6 @@
 package htlkaindorf.springsecuritydemo.repositories;
 
-import htlkaindorf.springsecuritydemo.entity.User;
+import htlkaindorf.springsecuritydemo.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

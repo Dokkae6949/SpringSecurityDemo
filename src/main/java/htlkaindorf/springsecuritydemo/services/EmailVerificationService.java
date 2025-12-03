@@ -1,6 +1,6 @@
 package htlkaindorf.springsecuritydemo.services;
 
-import htlkaindorf.springsecuritydemo.entity.User;
+import htlkaindorf.springsecuritydemo.model.entity.User;
 
 public interface EmailVerificationService {
 

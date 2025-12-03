@@ -1,8 +1,7 @@
 package htlkaindorf.springsecuritydemo.repositories;
 
-import htlkaindorf.springsecuritydemo.entity.VerificationToken;
+import htlkaindorf.springsecuritydemo.model.entity.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;

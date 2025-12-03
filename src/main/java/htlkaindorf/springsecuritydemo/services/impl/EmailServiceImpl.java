@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
-
     private final JavaMailSender javaMailSender;
     private final EmailTemplateService emailTemplateService;
+
 
     @Override
     public void sendVerificationEmail(String email, String token) {
@@ -26,7 +26,7 @@ public class EmailServiceImpl implements EmailService {
 
         try {
             MimeMessageHelper helper = new MimeMessageHelper(msg, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
-            helper.setFrom("noreply@google.com");
+            helper.setFrom("noreply@htl-kaindorf.com");
             helper.setTo(email);
             helper.setSubject("Email Verification");
             helper.setText(htmlContent, true);

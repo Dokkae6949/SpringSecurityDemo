@@ -1,7 +1,7 @@
 package htlkaindorf.springsecuritydemo.services.impl;
 
-import htlkaindorf.springsecuritydemo.entity.User;
-import htlkaindorf.springsecuritydemo.entity.VerificationToken;
+import htlkaindorf.springsecuritydemo.model.entity.User;
+import htlkaindorf.springsecuritydemo.model.entity.VerificationToken;
 import htlkaindorf.springsecuritydemo.repositories.VerificationTokenRepository;
 import htlkaindorf.springsecuritydemo.services.EmailVerificationService;
 import lombok.RequiredArgsConstructor;

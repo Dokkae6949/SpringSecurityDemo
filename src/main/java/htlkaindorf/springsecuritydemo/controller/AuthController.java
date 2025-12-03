@@ -1,7 +1,7 @@
 package htlkaindorf.springsecuritydemo.controller;
 
-import htlkaindorf.springsecuritydemo.auth.AuthRequest;
-import htlkaindorf.springsecuritydemo.auth.AuthResponse;
+import htlkaindorf.springsecuritydemo.model.dto.auth.AuthRequest;
+import htlkaindorf.springsecuritydemo.model.dto.auth.AuthResponse;
 import htlkaindorf.springsecuritydemo.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

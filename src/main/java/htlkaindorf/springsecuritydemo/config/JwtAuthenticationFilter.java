@@ -1,7 +1,7 @@
 package htlkaindorf.springsecuritydemo.config;
 
 import htlkaindorf.springsecuritydemo.services.JwtService;
-import htlkaindorf.springsecuritydemo.services.impl.CustomUserDetailsService;
+import htlkaindorf.springsecuritydemo.services.impl.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +23,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final CustomUserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

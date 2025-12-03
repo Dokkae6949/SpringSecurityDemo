@@ -1,7 +1,7 @@
 package htlkaindorf.springsecuritydemo.database;
 
-import htlkaindorf.springsecuritydemo.entity.Role;
-import htlkaindorf.springsecuritydemo.entity.User;
+import htlkaindorf.springsecuritydemo.model.entity.Role;
+import htlkaindorf.springsecuritydemo.model.entity.User;
 import htlkaindorf.springsecuritydemo.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class DBLoader {
-
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
 
     @PostConstruct
     public void initUsers() {
@@ -41,5 +41,4 @@ public class DBLoader {
         userRepository.save(user2);
         userRepository.save(user3);
     }
-
 }

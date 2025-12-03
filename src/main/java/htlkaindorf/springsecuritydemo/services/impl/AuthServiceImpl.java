@@ -1,10 +1,10 @@
 package htlkaindorf.springsecuritydemo.services.impl;
 
-import htlkaindorf.springsecuritydemo.auth.AuthRequest;
-import htlkaindorf.springsecuritydemo.auth.AuthResponse;
-import htlkaindorf.springsecuritydemo.entity.Role;
-import htlkaindorf.springsecuritydemo.entity.User;
-import htlkaindorf.springsecuritydemo.entity.VerificationToken;
+import htlkaindorf.springsecuritydemo.model.dto.auth.AuthRequest;
+import htlkaindorf.springsecuritydemo.model.dto.auth.AuthResponse;
+import htlkaindorf.springsecuritydemo.model.entity.Role;
+import htlkaindorf.springsecuritydemo.model.entity.User;
+import htlkaindorf.springsecuritydemo.model.entity.VerificationToken;
 import htlkaindorf.springsecuritydemo.exceptions.EmailVerificationTokenExpired;
 import htlkaindorf.springsecuritydemo.exceptions.PasswordWrongException;
 import htlkaindorf.springsecuritydemo.exceptions.UserAlreadyExistsAuthenticationException;

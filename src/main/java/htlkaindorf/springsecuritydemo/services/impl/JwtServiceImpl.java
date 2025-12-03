@@ -1,6 +1,6 @@
 package htlkaindorf.springsecuritydemo.services.impl;
 
-import htlkaindorf.springsecuritydemo.entity.User;
+import htlkaindorf.springsecuritydemo.model.entity.User;
 import htlkaindorf.springsecuritydemo.services.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

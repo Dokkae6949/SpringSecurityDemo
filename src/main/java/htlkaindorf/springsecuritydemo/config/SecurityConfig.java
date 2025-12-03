@@ -1,7 +1,7 @@
 package htlkaindorf.springsecuritydemo.config;
 
-import htlkaindorf.springsecuritydemo.entity.Role;
-import htlkaindorf.springsecuritydemo.services.impl.CustomUserDetailsService;
+import htlkaindorf.springsecuritydemo.model.entity.Role;
+import htlkaindorf.springsecuritydemo.services.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomUserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtUnauthorizedEndpoint unauthorizedEndPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -32,8 +33,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(CorsConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/*").permitAll() // Login & Registr; /api/auth/login -> not  /api/auth/a/login
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/maintenance/**").hasRole(Role.MANAGER.name())
                         .anyRequest().authenticated()
@@ -46,8 +48,6 @@ public class SecurityConfig {
                         .authenticationEntryPoint(unauthorizedEndPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-        // Reihenfolge wichtig
 
         return http.build();
     }
