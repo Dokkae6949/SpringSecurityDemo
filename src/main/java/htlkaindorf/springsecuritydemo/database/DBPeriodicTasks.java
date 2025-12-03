@@ -18,6 +18,7 @@ public class DBPeriodicTasks {
     private final VerificationTokenRepository verificationTokenRepository;
     private final UserRepository userRepository;
 
+
     @Scheduled(fixedRate = 60 * 1000)
     void cleanupVerificationTokens() {
         List<VerificationToken> expiredTokens = verificationTokenRepository.getVerificationTokensByExpiryDateBefore(LocalDateTime.now());

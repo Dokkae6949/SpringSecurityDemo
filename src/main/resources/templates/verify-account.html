@@ -2,52 +2,66 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>Verify your account</title>
+    <title>Account Verification Required</title>
 
     <style>
-        /* Inlined styles work best for email clients */
-        .btn {
-            background-color: #4CAF50;
+        .verify-btn {
+            background-color: #007bff;
             color: white !important;
-            padding: 12px 24px;
-            border-radius: 6px;
+            padding: 14px 28px;
+            border-radius: 4px;
             text-decoration: none;
             display: inline-block;
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: 500;
         }
 
-        .container {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            max-width: 600px;
-            margin: auto;
-            line-height: 1.4;
+        .email-wrapper {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 30px;
+            max-width: 550px;
+            margin: 0 auto;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+
+        .content-box {
+            background-color: white;
+            padding: 25px;
+            border-radius: 5px;
+        }
+
+        .link-text {
+            word-break: break-all;
+            color: #007bff;
+            font-size: 13px;
         }
     </style>
 </head>
 
 <body>
-<div class="container">
+<div class="email-wrapper">
+    <div class="content-box">
+        <h2 style="color: #333;">Welcome, <span th:text="${name}">User</span>!</h2>
 
-    <h2>Hello <span th:text="${name}">User</span>,</h2>
+        <p>Thank you for registering. To complete your registration, please verify your email address by clicking the button below:</p>
 
-    <p>Please click the button below to verify your account:</p>
+        <p style="margin: 25px 0; text-align: center;">
+            <a th:href="${verificationUrl}" class="verify-btn">Verify My Email</a>
+        </p>
 
-    <p style="margin: 20px 0;">
-        <a th:href="${verificationUrl}" class="btn">Verify Account</a>
-    </p>
+        <p style="font-size: 14px; color: #666;">Alternatively, you can copy and paste this URL into your browser:</p>
 
-    <p>If the button doesn't work, copy this link into your browser:</p>
+        <p class="link-text">
+            <a th:href="${verificationUrl}" th:text="${verificationUrl}">
+                Verification link
+            </a>
+        </p>
 
-    <p>
-        <a th:href="${verificationUrl}" th:text="${verificationUrl}">
-            If you see this, something went wrong.
-        </a>
-    </p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
 
-    <br>
-
-    <p>Kind regards,<br>POS Company</p>
+        <p style="font-size: 14px; color: #888;">Best regards,<br>The Security Team</p>
+    </div>
 </div>
 </body>
 </html>

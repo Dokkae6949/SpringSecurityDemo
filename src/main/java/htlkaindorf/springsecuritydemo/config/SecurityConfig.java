@@ -19,8 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity // Sorgt dafür das die FilterChain überhaupt verwendet wird
-@EnableMethodSecurity // Security auf Methoden level setzen (bsp -> DemoController mit @PreAuthorize)
+@EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -28,6 +28,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtUnauthorizedEndpoint unauthorizedEndPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

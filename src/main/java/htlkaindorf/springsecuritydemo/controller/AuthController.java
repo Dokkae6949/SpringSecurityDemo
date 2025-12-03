@@ -15,6 +15,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody AuthRequest authRequest
