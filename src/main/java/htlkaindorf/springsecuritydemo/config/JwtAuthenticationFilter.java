@@ -25,6 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -35,7 +36,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("No token in request: signin, signup, public, ...");
             filterChain.doFilter(request, response);
             return;
-            // Ab hier würde der response gehandelt werden
         }
 
         String jwt = authHeader.substring(7);
@@ -46,14 +46,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                // Setzt paar sicherheits dingens für die Tokens
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
                 log.info("End of filter - Authentication = {}", authToken != null ? authToken.getName() : "null");
                 log.info("Jwt Authentication Object created!");
             } else {
                 log.warn("Invalid Jwt token for user: " + username);
-                // Hiermit wird die Chain ganz beendet
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Jwt token");
                 return;
             }

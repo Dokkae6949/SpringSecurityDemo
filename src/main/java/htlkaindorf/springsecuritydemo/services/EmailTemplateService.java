@@ -11,6 +11,7 @@ public class EmailTemplateService {
 
     private final TemplateEngine templateEngine;
 
+
     public String buildVerificationEmail(String email, String verificationUrl) {
         Context context = new Context();
         context.setVariable("name", email.split("@")[0]);

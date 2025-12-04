@@ -38,16 +38,17 @@ public class AuthServiceImpl implements AuthService {
     private final EmailService emailService;
     private final VerificationTokenRepository verificationTokenRepository;
 
+
     @Override
     public AuthResponse login(AuthRequest request) {
 
-        Optional<User> foundUser = userRepository.findUserByUsername(request.getUsername());
+        Optional<User> userOptional = userRepository.findUserByUsername(request.getUsername());
 
-        if (foundUser.isEmpty()) {
+        if (userOptional.isEmpty()) {
             throw new UsernameWrongException("User " + request.getUsername() + " not found.");
         }
 
-        if (!passwordEncoder.matches(request.getPassword(), foundUser.get().getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), userOptional.get().getPassword())) {
             throw new PasswordWrongException("Invalid Password.");
         }
 
@@ -56,43 +57,44 @@ public class AuthServiceImpl implements AuthService {
                 request.getPassword()
         ));
 
-        UserDetails user = (UserDetails) authentication.getPrincipal();
+        UserDetails authenticatedUser = (UserDetails) authentication.getPrincipal();
 
-        String jwt = jwtService.generateToken((User) user);
+        String jwt = jwtService.generateToken((User) authenticatedUser);
 
         return new AuthResponse(jwt);
     }
 
+    @Override
     public void register(AuthRequest request) {
         if (userRepository.findUserByUsername(request.getUsername()).isPresent()) {
             throw new UserAlreadyExistsAuthenticationException("A user with this email is already registered.");
         }
 
-        User newUser = User.builder()
+        User registeredUser = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
 
-        userRepository.save(newUser);
+        userRepository.save(registeredUser);
 
         emailService.sendVerificationEmail(
-                newUser.getUsername(),
-                emailVerificationService.generateVerificationToken(newUser)
+                registeredUser.getUsername(),
+                emailVerificationService.generateVerificationToken(registeredUser)
         );
     }
 
-
+    @Override
     public void verifyEmail(String token) {
-        VerificationToken vToken = verificationTokenRepository.getVerificationTokenByToken(token);
+        VerificationToken verificationToken = verificationTokenRepository.getVerificationTokenByToken(token);
 
-        if (!vToken.getExpiryDate().isAfter(LocalDateTime.now())) {
+        if (!verificationToken.getExpiryDate().isAfter(LocalDateTime.now())) {
             throw new EmailVerificationTokenExpired("The Verification Token is expired!");
         }
 
-        vToken.getUser().setEnabled(true);
-        userRepository.save(vToken.getUser());
-        verificationTokenRepository.delete(vToken);
+        verificationToken.getUser().setEnabled(true);
+        userRepository.save(verificationToken.getUser());
+        verificationTokenRepository.delete(verificationToken);
     }
 
 }

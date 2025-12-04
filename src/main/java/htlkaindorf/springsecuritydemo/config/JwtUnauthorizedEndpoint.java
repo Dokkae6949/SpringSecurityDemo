@@ -26,6 +26,7 @@ public class JwtUnauthorizedEndpoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper mapper;
 
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 
@@ -34,7 +35,6 @@ public class JwtUnauthorizedEndpoint implements AuthenticationEntryPoint {
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("status", resolveErrorStatus(authException));
-        // Version 1: No handling of individual errors
         responseBody.put("error", resolveErrorMessage(authException));
         responseBody.put("path", request.getRequestURL());
 

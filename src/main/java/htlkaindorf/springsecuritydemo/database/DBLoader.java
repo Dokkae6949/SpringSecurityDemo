@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class DBLoader {
+
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -19,26 +20,26 @@ public class DBLoader {
     public void initUsers() {
         if (userRepository.count() != 0) return;
 
-        User user1 = User.builder()
+        User regularUser = User.builder()
                 .username("alice")
                 .password(passwordEncoder.encode("password123"))
                 .role(Role.USER)
                 .build();
 
-        User user2 = User.builder()
+        User adminUser = User.builder()
                 .username("bob")
                 .password(passwordEncoder.encode("password123"))
                 .role(Role.ADMIN)
                 .build();
 
-        User user3 = User.builder()
+        User managerUser = User.builder()
                 .username("charlie")
                 .password(passwordEncoder.encode("password123"))
                 .role(Role.MANAGER)
                 .build();
 
-        userRepository.save(user1);
-        userRepository.save(user2);
-        userRepository.save(user3);
+        userRepository.save(regularUser);
+        userRepository.save(adminUser);
+        userRepository.save(managerUser);
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
+
     private final JavaMailSender javaMailSender;
     private final EmailTemplateService emailTemplateService;
 
@@ -20,17 +21,17 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendVerificationEmail(String email, String token) {
 
-        MimeMessage msg = javaMailSender.createMimeMessage();
+        MimeMessage message = javaMailSender.createMimeMessage();
         String verificationUrl = "http://localhost:8080/api/auth/verify-email?token=" + token;
         String htmlContent = emailTemplateService.buildVerificationEmail(email, verificationUrl);
 
         try {
-            MimeMessageHelper helper = new MimeMessageHelper(msg, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
-            helper.setFrom("noreply@htl-kaindorf.com");
-            helper.setTo(email);
-            helper.setSubject("Email Verification");
-            helper.setText(htmlContent, true);
-            javaMailSender.send(msg);
+            MimeMessageHelper messageHelper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
+            messageHelper.setFrom("noreply@springsecuritydemo.com");
+            messageHelper.setTo(email);
+            messageHelper.setSubject("Email Verification");
+            messageHelper.setText(htmlContent, true);
+            javaMailSender.send(message);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }

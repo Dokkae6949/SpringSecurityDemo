@@ -20,16 +20,17 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     @Value("${application.security.verify.expiration}")
     private long tokenExpiration;
 
+
     @Override
     public String generateVerificationToken(User user) {
-        VerificationToken newToken = new VerificationToken();
-        newToken.setToken(String.valueOf(UUID.randomUUID()));
-        newToken.setExpiryDate(LocalDateTime.now().plusSeconds(tokenExpiration / 1000));
-        newToken.setUser(user);
+        VerificationToken verificationToken = new VerificationToken();
+        verificationToken.setToken(String.valueOf(UUID.randomUUID()));
+        verificationToken.setExpiryDate(LocalDateTime.now().plusSeconds(tokenExpiration / 1000));
+        verificationToken.setUser(user);
 
-        verificationTokenRepository.save(newToken);
+        verificationTokenRepository.save(verificationToken);
 
-        return newToken.getToken();
+        return verificationToken.getToken();
     }
 
 }

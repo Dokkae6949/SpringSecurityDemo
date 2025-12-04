@@ -18,7 +18,6 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
-    // Wichtig für PLF (wie man aus application.properties liest)
     @Value("${application.security.jwt.secret}")
     private String secretKey;
 
@@ -64,7 +63,6 @@ public class JwtServiceImpl implements JwtService {
         return extractAllClaims(token).getExpiration();
     }
 
-    // Beim erstellen wird der key encoded und muss hier deshalb decoded werden
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
