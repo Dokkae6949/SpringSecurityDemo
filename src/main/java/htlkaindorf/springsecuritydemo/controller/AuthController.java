@@ -4,6 +4,7 @@ import htlkaindorf.springsecuritydemo.model.dto.auth.AuthPasswordForgotRequest;
 import htlkaindorf.springsecuritydemo.model.dto.auth.AuthPasswordResetRequest;
 import htlkaindorf.springsecuritydemo.model.dto.auth.AuthRequest;
 import htlkaindorf.springsecuritydemo.model.dto.auth.AuthResponse;
+import htlkaindorf.springsecuritydemo.model.dto.auth.JwtAuthenticationTokens;
 import htlkaindorf.springsecuritydemo.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(
+    public ResponseEntity<JwtAuthenticationTokens> login(
             @Valid @RequestBody AuthRequest authRequest
     ) {
         return ResponseEntity.ok(authService.login(authRequest));
@@ -31,6 +32,18 @@ public class AuthController {
     ) {
         authService.register(authRequest);
         return ResponseEntity.ok("Successfully registered! Check Email for verification.");
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<JwtAuthenticationTokens> refreshToken(
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String refreshToken = authorizationHeader.substring(7);
+        return ResponseEntity.ok(authService.refreshToken(refreshToken));
     }
 
     @PostMapping("/forgot-pw")

@@ -1,7 +1,9 @@
 package htlkaindorf.springsecuritydemo.config;
 
+import htlkaindorf.springsecuritydemo.exceptions.AuthorizationTokenExpiredException;
 import htlkaindorf.springsecuritydemo.services.JwtService;
 import htlkaindorf.springsecuritydemo.services.impl.UserDetailsServiceImpl;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,23 +40,51 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String jwt = authHeader.substring(7);
-        String username = jwtService.extractUsername(jwt);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-                log.info("End of filter - Authentication = {}", authToken != null ? authToken.getName() : "null");
-                log.info("Jwt Authentication Object created!");
-            } else {
-                log.warn("Invalid Jwt token for user: " + username);
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Jwt token");
+        // Special handling for refresh token endpoint
+        if (request.getRequestURI().equals("/api/auth/refreshToken")) {
+            if (!jwtService.isRefreshToken(jwt)) {
+                log.warn("Attempted to use access token on refresh endpoint");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Only refresh tokens are allowed on this endpoint");
                 return;
             }
+            // Let the endpoint handle the refresh token validation
+            filterChain.doFilter(request, response);
+            return;
+        }
 
+        // For all other endpoints, only accept access tokens
+        if (jwtService.isRefreshToken(jwt)) {
+            log.warn("Attempted to use refresh token on regular endpoint");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Refresh tokens cannot be used for API authentication");
+            return;
+        }
+
+        try {
+            String username = jwtService.extractUsername(jwt);
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    log.info("End of filter - Authentication = {}", authToken != null ? authToken.getName() : "null");
+                    log.info("Jwt Authentication Object created!");
+                } else {
+                    log.warn("Invalid Jwt token for user: " + username);
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Jwt token");
+                    return;
+                }
+            }
+        } catch (ExpiredJwtException e) {
+            log.warn("Expired JWT token: " + e.getMessage());
+            throw new AuthorizationTokenExpiredException("Access token is expired");
+        } catch (Exception e) {
+            log.error("Cannot set user authentication: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+            return;
         }
 
         log.info("Jwt filter finished!");
