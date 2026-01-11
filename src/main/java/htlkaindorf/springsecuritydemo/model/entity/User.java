@@ -36,6 +36,9 @@ public class User implements UserDetails {
     @ColumnDefault("false")
     private Boolean enabled = false;
 
+    @OneToMany(mappedBy = "user")
+    private List<ResetToken> resetTokens;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

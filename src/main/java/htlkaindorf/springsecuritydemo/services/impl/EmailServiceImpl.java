@@ -20,7 +20,6 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendVerificationEmail(String email, String token) {
-
         MimeMessage message = javaMailSender.createMimeMessage();
         String verificationUrl = "http://localhost:8080/api/auth/verify-email?token=" + token;
         String htmlContent = emailTemplateService.buildVerificationEmail(email, verificationUrl);
@@ -37,4 +36,21 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    public void sendPasswordResetEmail(String email, String token) {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        String resetUrl = "http://localhost:8080/reset-pw?token=" + token;
+        String htmlContent = emailTemplateService.buildPasswordResetEmail(email, resetUrl);
+
+        try {
+            MimeMessageHelper messageHelper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
+            messageHelper.setFrom("noreply@springsecuritydemo.com");
+            messageHelper.setTo(email);
+            messageHelper.setSubject("Password Reset");
+            messageHelper.setText(htmlContent, true);
+            javaMailSender.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

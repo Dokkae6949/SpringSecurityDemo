@@ -19,4 +19,10 @@ public class EmailTemplateService {
         return templateEngine.process("/verify-account", context);
     }
 
+    public String buildPasswordResetEmail(String email, String resetUrl) {
+        Context context = new Context();
+        context.setVariable("name", email.split("@")[0]);
+        context.setVariable("resetUrl", resetUrl);
+        return templateEngine.process("/reset-password", context);
+    }
 }
