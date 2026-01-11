@@ -10,6 +10,7 @@ import htlkaindorf.springsecuritydemo.model.entity.Role;
 import htlkaindorf.springsecuritydemo.model.entity.User;
 import htlkaindorf.springsecuritydemo.model.entity.VerificationToken;
 import htlkaindorf.springsecuritydemo.exceptions.EmailVerificationTokenExpired;
+import htlkaindorf.springsecuritydemo.exceptions.InvalidRefreshTokenException;
 import htlkaindorf.springsecuritydemo.exceptions.PasswordWrongException;
 import htlkaindorf.springsecuritydemo.exceptions.UserAlreadyExistsAuthenticationException;
 import htlkaindorf.springsecuritydemo.exceptions.UsernameWrongException;
@@ -151,14 +152,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtAuthenticationTokens refreshToken(String refreshToken) {
         if (!jwtService.isRefreshToken(refreshToken)) {
-            throw new IllegalArgumentException("Token is not a refresh token");
+            throw new InvalidRefreshTokenException("Token is not a refresh token");
         }
 
         String username = jwtService.extractUsername(refreshToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         if (!jwtService.isTokenValid(refreshToken, userDetails)) {
-            throw new IllegalArgumentException("Invalid refresh token");
+            throw new InvalidRefreshTokenException("Invalid or expired refresh token");
         }
 
         String newAccessToken = jwtService.generateAccessToken((User) userDetails);

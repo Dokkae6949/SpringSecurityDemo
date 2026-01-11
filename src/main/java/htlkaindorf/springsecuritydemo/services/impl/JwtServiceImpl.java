@@ -64,7 +64,7 @@ public class JwtServiceImpl implements JwtService {
             String username = extractUsername(token);
             return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
         } catch (ExpiredJwtException e) {
-            String tokenType = isAccessToken(token) ? "Access token" : "Refresh token";
+            String tokenType = extractTokenTypeFromExpiredToken(e);
             throw new AuthorizationTokenExpiredException(tokenType + " is expired");
         }
     }
@@ -75,7 +75,7 @@ public class JwtServiceImpl implements JwtService {
             Claims claims = extractAllClaims(token);
             return "ACCESS".equals(claims.get("tokenType"));
         } catch (ExpiredJwtException e) {
-            return "ACCESS".equals(e.getClaims().get("tokenType"));
+            return "ACCESS".equals(extractTokenTypeFromExpiredToken(e));
         }
     }
 
@@ -85,7 +85,7 @@ public class JwtServiceImpl implements JwtService {
             Claims claims = extractAllClaims(token);
             return "REFRESH".equals(claims.get("tokenType"));
         } catch (ExpiredJwtException e) {
-            return "REFRESH".equals(e.getClaims().get("tokenType"));
+            return "REFRESH".equals(extractTokenTypeFromExpiredToken(e));
         }
     }
 
@@ -98,6 +98,16 @@ public class JwtServiceImpl implements JwtService {
         }
     }
 
+    private String extractTokenTypeFromExpiredToken(ExpiredJwtException e) {
+        Object tokenType = e.getClaims().get("tokenType");
+        if ("ACCESS".equals(tokenType)) {
+            return "Access token";
+        } else if ("REFRESH".equals(tokenType)) {
+            return "Refresh token";
+        }
+        return "Token";
+    }
+
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -108,14 +118,10 @@ public class JwtServiceImpl implements JwtService {
 
     private boolean isTokenExpired(String token) {
         try {
-            return extractExpiration(token).before(new Date());
+            return extractAllClaims(token).getExpiration().before(new Date());
         } catch (ExpiredJwtException e) {
             return true;
         }
-    }
-
-    private Date extractExpiration(String token) {
-        return extractAllClaims(token).getExpiration();
     }
 
     private SecretKey getSigningKey() {

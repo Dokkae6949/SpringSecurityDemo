@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -35,11 +38,15 @@ public class AuthController {
     }
 
     @PostMapping("/refreshToken")
-    public ResponseEntity<JwtAuthenticationTokens> refreshToken(
+    public ResponseEntity<?> refreshToken(
             @RequestHeader("Authorization") String authorizationHeader
     ) {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            return ResponseEntity.badRequest().build();
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Bad Request");
+            errorResponse.put("message", "Authorization header must contain a valid Bearer token");
+            errorResponse.put("status", 400);
+            return ResponseEntity.badRequest().body(errorResponse);
         }
 
         String refreshToken = authorizationHeader.substring(7);
