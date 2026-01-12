@@ -4,11 +4,13 @@ import htlkaindorf.springsecuritydemo.model.dto.auth.AuthPasswordForgotRequest;
 import htlkaindorf.springsecuritydemo.model.dto.auth.AuthPasswordResetRequest;
 import htlkaindorf.springsecuritydemo.model.dto.auth.AuthRequest;
 import htlkaindorf.springsecuritydemo.model.dto.auth.AuthResponse;
+import htlkaindorf.springsecuritydemo.model.dto.auth.JwtAuthenticationTokens;
 import htlkaindorf.springsecuritydemo.model.entity.ResetToken;
 import htlkaindorf.springsecuritydemo.model.entity.Role;
 import htlkaindorf.springsecuritydemo.model.entity.User;
 import htlkaindorf.springsecuritydemo.model.entity.VerificationToken;
 import htlkaindorf.springsecuritydemo.exceptions.EmailVerificationTokenExpired;
+import htlkaindorf.springsecuritydemo.exceptions.InvalidRefreshTokenException;
 import htlkaindorf.springsecuritydemo.exceptions.PasswordWrongException;
 import htlkaindorf.springsecuritydemo.exceptions.UserAlreadyExistsAuthenticationException;
 import htlkaindorf.springsecuritydemo.exceptions.UsernameWrongException;
@@ -44,13 +46,14 @@ public class AuthServiceImpl implements AuthService {
     private final EmailVerificationService emailVerificationService;
     private final EmailService emailService;
     private final VerificationTokenRepository verificationTokenRepository;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Value("${application.security.reset-pwd-expiration}")
     private long resetPwdExpirationMs;
 
 
     @Override
-    public AuthResponse login(AuthRequest request) {
+    public JwtAuthenticationTokens login(AuthRequest request) {
 
         Optional<User> userOptional = userRepository.findUserByUsername(request.getUsername());
 
@@ -69,9 +72,10 @@ public class AuthServiceImpl implements AuthService {
 
         UserDetails authenticatedUser = (UserDetails) authentication.getPrincipal();
 
-        String jwt = jwtService.generateToken((User) authenticatedUser);
+        String accessToken = jwtService.generateAccessToken((User) authenticatedUser);
+        String refreshToken = jwtService.generateRefreshToken((User) authenticatedUser);
 
-        return new AuthResponse(jwt);
+        return new JwtAuthenticationTokens(accessToken, refreshToken);
     }
 
     @Override
@@ -143,5 +147,23 @@ public class AuthServiceImpl implements AuthService {
 
         resetTokenRepository.delete(resetToken.get());
         return true;
+    }
+
+    @Override
+    public JwtAuthenticationTokens refreshToken(String refreshToken) {
+        if (!jwtService.isRefreshToken(refreshToken)) {
+            throw new InvalidRefreshTokenException("Token is not a refresh token");
+        }
+
+        String username = jwtService.extractUsername(refreshToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        if (!jwtService.isTokenValid(refreshToken, userDetails)) {
+            throw new InvalidRefreshTokenException("Invalid or expired refresh token");
+        }
+
+        String newAccessToken = jwtService.generateAccessToken((User) userDetails);
+
+        return new JwtAuthenticationTokens(newAccessToken, refreshToken);
     }
 }

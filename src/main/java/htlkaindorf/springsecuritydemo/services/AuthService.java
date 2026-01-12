@@ -4,10 +4,11 @@ import htlkaindorf.springsecuritydemo.model.dto.auth.AuthPasswordForgotRequest;
 import htlkaindorf.springsecuritydemo.model.dto.auth.AuthPasswordResetRequest;
 import htlkaindorf.springsecuritydemo.model.dto.auth.AuthRequest;
 import htlkaindorf.springsecuritydemo.model.dto.auth.AuthResponse;
+import htlkaindorf.springsecuritydemo.model.dto.auth.JwtAuthenticationTokens;
 
 public interface AuthService {
 
-    AuthResponse login(AuthRequest request);
+    JwtAuthenticationTokens login(AuthRequest request);
 
     void register(AuthRequest request);
 
@@ -16,4 +17,6 @@ public interface AuthService {
     void forgotPassword(AuthPasswordForgotRequest request);
 
     boolean resetPassword(String token, AuthPasswordResetRequest request);
+
+    JwtAuthenticationTokens refreshToken(String refreshToken);
 }

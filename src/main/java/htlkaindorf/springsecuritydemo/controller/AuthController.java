@@ -4,11 +4,15 @@ import htlkaindorf.springsecuritydemo.model.dto.auth.AuthPasswordForgotRequest;
 import htlkaindorf.springsecuritydemo.model.dto.auth.AuthPasswordResetRequest;
 import htlkaindorf.springsecuritydemo.model.dto.auth.AuthRequest;
 import htlkaindorf.springsecuritydemo.model.dto.auth.AuthResponse;
+import htlkaindorf.springsecuritydemo.model.dto.auth.JwtAuthenticationTokens;
 import htlkaindorf.springsecuritydemo.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,7 +23,7 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(
+    public ResponseEntity<JwtAuthenticationTokens> login(
             @Valid @RequestBody AuthRequest authRequest
     ) {
         return ResponseEntity.ok(authService.login(authRequest));
@@ -31,6 +35,22 @@ public class AuthController {
     ) {
         authService.register(authRequest);
         return ResponseEntity.ok("Successfully registered! Check Email for verification.");
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<?> refreshToken(
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Bad Request");
+            errorResponse.put("message", "Authorization header must contain a valid Bearer token");
+            errorResponse.put("status", 400);
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+
+        String refreshToken = authorizationHeader.substring(7);
+        return ResponseEntity.ok(authService.refreshToken(refreshToken));
     }
 
     @PostMapping("/forgot-pw")
